@@ -121,33 +121,33 @@ footer{
 const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ3QvxrPuDvZnfH99NirUMGTggsakYolRVYYWpqNhVDjnWZSo8uOV2OnZhM-0BrLz-xvgwdmj8PK5-A/pub?output=csv";
 
 fetch(csvUrl)
-.then(response => response.text())
+.then(res => res.text())
 .then(csv => {
   const rows = csv.trim().split(/\r?\n/);
   const list = document.getElementById("review-list");
   list.innerHTML = "";
 
   rows.slice(1).forEach(row => {
-    const cols = row.match(/("(?:[^"]|"")*"|[^,]*)(,|$)/g);
-    if (!cols) return;
+    const values = row.match(/("([^"]|"")*"|[^,]*)(,|$)/g);
+    if (!values) return;
 
-    const values = row.match(/("(?:[^"]|"")*"|[^,]*)/g)
-      .filter((v, i) => i < 3)
-      .map(v => v.replace(/^"|"$/g, "").replace(/""/g, '"'));
+    const data = values.slice(0, 3).map(v =>
+      v.replace(/,$/, "").replace(/^"|"$/g, "").replace(/""/g, '"')
+    );
 
-    if (values.length < 3 || !values[0] || !values[2]) return;
+    if (!data[0] || !data[2]) return;
 
     const card = document.createElement("div");
     card.className = "card";
 
     const name = document.createElement("h3");
-    name.textContent = values[0];
+    name.textContent = data[0];
 
     const rating = document.createElement("p");
-    rating.textContent = "⭐ " + values[1];
+    rating.textContent = "⭐ " + data[1];
 
     const review = document.createElement("p");
-    review.textContent = values[2];
+    review.textContent = data[2];
 
     card.append(name, rating, review);
     list.appendChild(card);
@@ -161,7 +161,7 @@ fetch(csvUrl)
   document.getElementById("review-list").textContent =
     "ไม่สามารถโหลดรีวิวได้ในขณะนี้";
 });
-                        </script>
+</script>
 
 <section class="card">
 <h2>📩 ติดต่อเรา</h2>
