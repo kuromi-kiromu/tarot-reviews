@@ -100,21 +100,68 @@ footer{
 </section>
 
 
+
 <section class="card" id="reviews">
   <h2>⭐ รีวิวจากผู้ใช้บริการ</h2>
+  <p>รีวิวที่ผ่านการตรวจสอบจาก Kuromi Tarot 💜</p>
 
-  <p>ขอบคุณทุกคนที่มาใช้บริการ Kuromi Tarot 💜</p>
-
-  <p>รีวิวทุกข้อความจะผ่านการตรวจสอบก่อนเผยแพร่</p>
+  <div id="review-list">
+    กำลังโหลดรีวิว...
+  </div>
 
   <a
-    href="https://docs.google.com/forms/d/e/1FAIpQLSf1XirKoETvCWU7tRUNX1dm8ku4QrZ9Zk2yqeEAn0r1q0DxCw/viewform?usp=header"
+    href="https://docs.google.com/forms/d/e/1FAIpQLSf1XirKoETvCWU7tRUNX1dm8ku4QrZ9Zk2yqeEAn0r1q0DxCw/viewform"
     target="_blank"
     class="btn">
     ✍️ เขียนรีวิว
   </a>
 </section>
- 
+
+<script>
+const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ3QvxrPuDvZnfH99NirUMGTggsakYolRVYYWpqNhVDjnWZSo8uOV2OnZhM-0BrLz-xvgwdmj8PK5-A/pub?output=csv";
+
+fetch(csvUrl)
+.then(response => response.text())
+.then(csv => {
+  const rows = csv.trim().split(/\r?\n/);
+  const list = document.getElementById("review-list");
+  list.innerHTML = "";
+
+  rows.slice(1).forEach(row => {
+    const cols = row.match(/("(?:[^"]|"")*"|[^,]*)(,|$)/g);
+    if (!cols) return;
+
+    const values = row.match(/("(?:[^"]|"")*"|[^,]*)/g)
+      .filter((v, i) => i < 3)
+      .map(v => v.replace(/^"|"$/g, "").replace(/""/g, '"'));
+
+    if (values.length < 3 || !values[0] || !values[2]) return;
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const name = document.createElement("h3");
+    name.textContent = values[0];
+
+    const rating = document.createElement("p");
+    rating.textContent = "⭐ " + values[1];
+
+    const review = document.createElement("p");
+    review.textContent = values[2];
+
+    card.append(name, rating, review);
+    list.appendChild(card);
+  });
+
+  if (!list.children.length) {
+    list.textContent = "ยังไม่มีรีวิวที่ได้รับการอนุมัติ 💜";
+  }
+})
+.catch(() => {
+  document.getElementById("review-list").textContent =
+    "ไม่สามารถโหลดรีวิวได้ในขณะนี้";
+});
+</script>
 
 <section class="card">
 <h2>📩 ติดต่อเรา</h2>
